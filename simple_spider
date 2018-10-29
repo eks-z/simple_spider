@@ -1,0 +1,22 @@
+import requests
+from pyquery import PyQuery as pq
+
+# 请求网络 获取数据  解码
+html = requests.get("http://news.4399.com/gonglue/lscs/kptj/").content.decode("gb2312")
+
+
+# 解析 提取数据
+doc = pq(html)
+
+items = doc("#dq_list > li").items()
+
+for item in items:
+    url = item.find("img").attr("lz_src")
+    url_content = requests.get(url).content
+    name = item.find(".kp-name").text()
+    print("Loading IMG: %s Location: %s" % (name, url))
+
+    with open("./card/" + name + ".jpg", 'wb') as file:
+        file.write(url_content)
+
+print("Loading over")
